@@ -1,9 +1,9 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import LicenseForm from '@/components/LicenseForm.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <LicenseForm />
   </main>
 </template>
