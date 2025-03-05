@@ -13,10 +13,13 @@ import {
   FloatLabel,
 } from 'primevue'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { useFormDataStore } from '@/stores/formDataStore'
 
 // Tailwind reactive breakpoints that can be used by Vue
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const mdAndSmaller = ref(breakpoints.smallerOrEqual('md'))
+
+const formDataStore = useFormDataStore()
 
 //Object to hold data from form
 const formData = ref({
@@ -66,6 +69,29 @@ function onAdvancedUpload(event) {
 function formSubmission(event) {
   event.preventDefault()
   console.log(event)
+  const sanitizedData = {
+    licenseNo: formData.value.licenseNo.replace(/\D/g, ''),
+    licenseClass: formData.value.licenseClass,
+    expiry: formData.value.expiry.toDateString(),
+    lastName: formData.value.lastName,
+    firstName: formData.value.firstName,
+    address: formData.value.address,
+    city: formData.value.city,
+    province: formData.value.province.code,
+    postalCode: formData.value.postalCode.replace(/\s/g, ''),
+    dateOfBirth: formData.value.dateOfBirth.toDateString(),
+    sex: formData.value.sex,
+    height: formData.value.height,
+    weight: formData.value.weight,
+    issued: formData.value.issued.toDateString(),
+    files: formData.value.files,
+  }
+  formDataStore.formData = sanitizedData
+  try {
+    formDataStore.uploadFormData()
+  } catch (error) {
+    console.log(error)
+  }
 }
 </script>
 
@@ -101,13 +127,7 @@ function formSubmission(event) {
         </FloatLabel>
 
         <FloatLabel variant="in">
-          <InputMask
-            id="expiry"
-            v-model="formData.expiry"
-            mask="99 aaa 9999"
-            fluid
-            required
-          ></InputMask>
+          <DatePicker id="expiry" v-model="formData.expiry" fluid required />
           <label for="expiry">Expiry</label>
         </FloatLabel>
         <!-- Div to take up a grid space, does not render when grid is collapsed to 1 collum -->
@@ -202,13 +222,7 @@ function formSubmission(event) {
         </InputGroup>
 
         <FloatLabel variant="in">
-          <InputMask
-            id="issued"
-            v-model="formData.issued"
-            mask="99 aaa 9999"
-            fluid
-            required
-          ></InputMask>
+          <DatePicker id="issued" v-model="formData.issued" fluid required />
           <label for="issued">Issued</label>
         </FloatLabel>
       </div>
