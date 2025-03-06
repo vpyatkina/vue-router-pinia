@@ -48,10 +48,6 @@ export const useFormDataStore = defineStore('formData', () => {
       file_urls: fileUrls.value,
     })
 
-    // if (status[0] !== ('2')) {
-    //   throw new
-    // }
-
     if (insertError) {
       console.log(insertError)
       throw insertError

@@ -12,6 +12,7 @@ import {
   Button,
   FloatLabel,
   useToast,
+  Message,
 } from 'primevue'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { useFormDataStore } from '@/stores/formDataStore'
@@ -63,6 +64,16 @@ const provinces = ref([
   { name: 'Yukon', code: 'YT' },
 ])
 
+//show success message
+const visible = ref(false)
+function showMessage() {
+  visible.value = true
+
+  setTimeout(() => {
+    visible.value = false
+  }, 3500)
+}
+
 //Function to save uploaded files to formData
 function onAdvancedUpload(event) {
   const files = event.files
@@ -92,6 +103,10 @@ async function formSubmission(event) {
   formDataStore.formData = sanitizedData
   try {
     await formDataStore.uploadFormData()
+    showMessage()
+    formData.value = { ...emptyFormData, files: [] }
+    formDataStore.formData = formData.value
+    formDataStore.fileUrls = []
   } catch (error) {
     console.log('an error has occured')
     const message = JSON.stringify(error) !== '{}' ? error.message : 'Undefined Error'
@@ -114,6 +129,9 @@ async function formSubmission(event) {
       id="license-form"
       v-on:submit="formSubmission($event)"
     >
+      <Message v-if="visible" severity="success" :life="3000" fluid class="mb-5"
+        >Success: License Information Submitted</Message
+      >
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-15">
         <FloatLabel variant="in">
           <InputMask
