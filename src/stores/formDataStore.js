@@ -5,28 +5,30 @@ import { v4 as uuidv4 } from 'uuid'
 
 export const useFormDataStore = defineStore('formData', () => {
   const formData = ref({})
+  const fileUrls = ref([])
+
   async function uploadFormData() {
     const files = formData.value.files
-    console.log(files)
-    const fileUrls = []
-    if (files) {
-      files.forEach(async (file) => {
-        const { data, error: bucketError } = await supabase.storage
-          .from('license-upload')
-          .upload(`public/${uuidv4()}.png`, file, {
-            cacheControl: '3600',
-            upsert: false,
-          })
-        console.log(data)
-        console.log(bucketError)
-        if (bucketError) {
-          console.log(bucketError)
-          throw bucketError
-        } else {
-          fileUrls.push(data.fullPath)
-        }
-      })
+
+    if (files.length > 0) {
+      // Wait for all file uploads to complete
+      await Promise.all(
+        files.map(async (file) => {
+          const { data, error: bucketError } = await supabase.storage
+            .from('license-upload')
+            .upload(`public/${uuidv4() + file.name}`, file, {
+              cacheControl: '3600',
+              upsert: false,
+            })
+          if (bucketError) {
+            throw bucketError
+          }
+          fileUrls.value.push(data.fullPath)
+        }),
+      )
     }
+
+    // Now all files are uploaded, proceed with database insert
     const { error: insertError } = await supabase.from('licenses').insert({
       license_no: formData.value.licenseNo,
       license_class: formData.value.licenseClass,
@@ -42,15 +44,14 @@ export const useFormDataStore = defineStore('formData', () => {
       height: formData.value.height,
       weight: formData.value.weight,
       issued: formData.value.issued,
-      file_urls: fileUrls,
+      file_urls: fileUrls.value,
     })
+
     if (insertError) {
-      console.log(insertError)
       throw insertError
-    } else {
-      return 'success'
     }
+    return 'success'
   }
 
-  return { formData, uploadFormData }
+  return { formData, fileUrls, uploadFormData }
 })

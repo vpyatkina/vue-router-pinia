@@ -20,8 +20,7 @@ async function logOut() {
   console.log(error)
 }
 
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log(event, session)
+supabase.auth.onAuthStateChange((event) => {
   if (event === 'SIGNED_OUT') {
     router.push('/login')
     console.log('Signed Out')
@@ -34,7 +33,6 @@ const user = ref()
 async function getUser() {
   const response = await supabase.auth.getUser()
   user.value = response.data.user
-  console.log(user.value)
 }
 
 getUser()

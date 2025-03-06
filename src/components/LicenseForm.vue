@@ -60,15 +60,12 @@ const provinces = ref([
 
 //Function to save uploaded files to formData
 function onAdvancedUpload(event) {
-  console.log(event)
   const files = event.files
-  formData.value.files.push(files)
-  console.log(formData.value.files[0])
+  Array.prototype.push.apply(formData.value.files, files)
 }
 
 function formSubmission(event) {
   event.preventDefault()
-  console.log(event)
   const sanitizedData = {
     licenseNo: formData.value.licenseNo.replace(/\D/g, ''),
     licenseClass: formData.value.licenseClass,

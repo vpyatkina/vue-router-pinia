@@ -7,11 +7,9 @@ import msLoginDark from '@/assets/ms-login-dark.svg'
 
 //Function to login the user when the login with MS button is pressed
 async function login() {
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  await supabase.auth.signInWithOAuth({
     provider: 'azure',
   })
-  console.log(data)
-  console.log(error)
 }
 
 // Initialize with the current system theme
@@ -19,12 +17,9 @@ const newColorScheme = ref(
   window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
 )
 
-console.log(newColorScheme.value)
-
 // Update when system theme changes
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
   newColorScheme.value = event.matches ? 'dark' : 'light'
-  console.log(newColorScheme.value)
 })
 </script>
 
