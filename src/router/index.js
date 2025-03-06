@@ -14,6 +14,11 @@ const router = createRouter({
       name: 'login',
       component: () => import('../views/AuthView.vue'),
     },
+    {
+      path: '/table',
+      name: 'table',
+      component: () => import('../views/TableView.vue'),
+    },
   ],
 })
 

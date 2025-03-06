@@ -8,9 +8,15 @@ import router from './router'
 const items = ref([
   {
     label: 'Form',
+    command: () => {
+      router.push('/')
+    },
   },
   {
     label: 'Table',
+    command: () => {
+      router.push('/table')
+    },
   },
 ])
 
