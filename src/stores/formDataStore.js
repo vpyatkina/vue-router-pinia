@@ -23,6 +23,7 @@ export const useFormDataStore = defineStore('formData', () => {
           if (bucketError) {
             throw bucketError
           }
+          // Write file URL's into array to be stored in DB
           fileUrls.value.push(data.fullPath)
         }),
       )
@@ -47,7 +48,12 @@ export const useFormDataStore = defineStore('formData', () => {
       file_urls: fileUrls.value,
     })
 
+    // if (status[0] !== ('2')) {
+    //   throw new
+    // }
+
     if (insertError) {
+      console.log(insertError)
       throw insertError
     }
     return 'success'

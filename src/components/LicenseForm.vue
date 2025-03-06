@@ -11,6 +11,7 @@ import {
   FileUpload,
   Button,
   FloatLabel,
+  useToast,
 } from 'primevue'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { useFormDataStore } from '@/stores/formDataStore'
@@ -20,9 +21,10 @@ const breakpoints = useBreakpoints(breakpointsTailwind)
 const mdAndSmaller = ref(breakpoints.smallerOrEqual('md'))
 
 const formDataStore = useFormDataStore()
+const toast = useToast()
 
-//Object to hold data from form
-const formData = ref({
+//template for form data
+const emptyFormData = {
   licenseNo: null,
   licenseClass: null,
   expiry: null,
@@ -38,7 +40,10 @@ const formData = ref({
   weight: null,
   issued: null,
   files: [],
-})
+}
+
+//Object to hold data from form
+const formData = ref({ ...emptyFormData })
 
 //Arrays holding lists for select fields
 const sexs = ref(['M', 'F', 'X'])
@@ -64,7 +69,8 @@ function onAdvancedUpload(event) {
   Array.prototype.push.apply(formData.value.files, files)
 }
 
-function formSubmission(event) {
+// Make some changes to form data then use store function to transfer data to db
+async function formSubmission(event) {
   event.preventDefault()
   const sanitizedData = {
     licenseNo: formData.value.licenseNo.replace(/\D/g, ''),
@@ -85,9 +91,16 @@ function formSubmission(event) {
   }
   formDataStore.formData = sanitizedData
   try {
-    formDataStore.uploadFormData()
+    await formDataStore.uploadFormData()
   } catch (error) {
-    console.log(error)
+    console.log('an error has occured')
+    const message = JSON.stringify(error) !== '{}' ? error.message : 'Undefined Error'
+    toast.add({
+      severity: 'error',
+      summary: 'Error Submitting Form',
+      detail: 'Error Details: ' + message,
+      life: 3000,
+    })
   }
 }
 </script>
