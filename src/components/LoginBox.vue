@@ -1,15 +1,15 @@
 <script setup>
-import { supabase } from '@/lib/supabaseClient'
 import { ref } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
 
 import msLoginLight from '@/assets/ms-login.svg'
 import msLoginDark from '@/assets/ms-login-dark.svg'
 
+const authStore = useAuthStore()
+
 //Function to login the user when the login with MS button is pressed
 async function login() {
-  await supabase.auth.signInWithOAuth({
-    provider: 'azure',
-  })
+  await authStore.loginWithMicrosoft()
 }
 
 // Initialize with the current system theme
